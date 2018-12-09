@@ -1,68 +1,18 @@
 #include "main.h"
 
-GLuint program;
-GLuint vao, vbo, Avao, Avbo;
 
-glm::mat4 Model;
-GLuint _Model;
-float move_x = 0.0, jump_y = 0.0;
-bool is_ground = 0;
-int is_Move = 0;
-int state = 0;
-
-GLuint IdleTex[12],  RunTex[18];
-int texnum = 0;
-
-mat4 Projection;
-mat4 View;
-vec3 CameraPos;
-
-GLuint _Camera, _Proj, _View;
-
-Point Player[4], Playeruv[4];
-glm::vec4 PlayerPos[4];
-int tempstate;
-
-Point tempR[4], tempL[4];
-Point nowground;
-
-GLuint Array_tex;
 
 void inittexture() {
 
-	Array_tex = TextureApp::GenTextureArray("./Texture/Idle/1x.png", 12, 1);
+	TexArray = TextureApp::GenTextureArray("./Texture/1x.png", 1, 7);
 
-	IdleTex[0] = TextureApp::GenTexture("./Texture/Idle/Idle1.png");
-	IdleTex[1] = TextureApp::GenTexture("./Texture/Idle/Idle2.png");
-	IdleTex[2] = TextureApp::GenTexture("./Texture/Idle/Idle3.png");
-	IdleTex[3] = TextureApp::GenTexture("./Texture/Idle/Idle4.png");
-	IdleTex[4] = TextureApp::GenTexture("./Texture/Idle/Idle5.png");
-	IdleTex[5] = TextureApp::GenTexture("./Texture/Idle/Idle6.png");
-	IdleTex[6] = TextureApp::GenTexture("./Texture/Idle/Idle7.png");
-	IdleTex[7] = TextureApp::GenTexture("./Texture/Idle/Idle8.png");
-	IdleTex[8] = TextureApp::GenTexture("./Texture/Idle/Idle9.png");
-	IdleTex[9] = TextureApp::GenTexture("./Texture/Idle/Idle10.png");
-	IdleTex[10] = TextureApp::GenTexture("./Texture/Idle/Idle11.png");
-	IdleTex[11] = TextureApp::GenTexture("./Texture/Idle/Idle12.png");
-
-	RunTex[0] = TextureApp::GenTexture("./Texture/run/run1.png");
-	RunTex[1] = TextureApp::GenTexture("./Texture/run/run2.png");
-	RunTex[2] = TextureApp::GenTexture("./Texture/run/run3.png");
-	RunTex[3] = TextureApp::GenTexture("./Texture/run/run4.png");
-	RunTex[4] = TextureApp::GenTexture("./Texture/run/run5.png");
-	RunTex[5] = TextureApp::GenTexture("./Texture/run/run6.png");
-	RunTex[6] = TextureApp::GenTexture("./Texture/run/run7.png");
-	RunTex[7] = TextureApp::GenTexture("./Texture/run/run8.png");
-	RunTex[8] = TextureApp::GenTexture("./Texture/run/run9.png");
-	RunTex[9] = TextureApp::GenTexture("./Texture/run/run10.png");
-	RunTex[10] = TextureApp::GenTexture("./Texture/run/run11.png");
-	RunTex[11] = TextureApp::GenTexture("./Texture/run/run12.png");
-	RunTex[12] = TextureApp::GenTexture("./Texture/run/run13.png");
-	RunTex[13] = TextureApp::GenTexture("./Texture/run/run14.png");
-	RunTex[14] = TextureApp::GenTexture("./Texture/run/run15.png");
-	RunTex[15] = TextureApp::GenTexture("./Texture/run/run16.png");
-	RunTex[16] = TextureApp::GenTexture("./Texture/run/run17.png");
-	RunTex[17] = TextureApp::GenTexture("./Texture/run/run18.png");
+	Tex[0] = TextureApp::GenTexture("./Texture/0.png");
+	Tex[1] = TextureApp::GenTexture("./Texture/1.png");
+	Tex[2] = TextureApp::GenTexture("./Texture/2.png");
+	Tex[3] = TextureApp::GenTexture("./Texture/3.png");
+	Tex[4] = TextureApp::GenTexture("./Texture/4.png");
+	Tex[5] = TextureApp::GenTexture("./Texture/5.png");
+	Tex[6] = TextureApp::GenTexture("./Texture/6.png");
 }
 
 
@@ -100,53 +50,44 @@ void updateModels() {
 	glm::mat4 Rotate = glm::mat4(1.0f);
 	Model = glm::mat4(1.0f);
 
-	Model = translate(move_x, jump_y, 0.0);
+	Model = translate(move_x, 0.0, 0.0);
  }
 
-void checkPlayer() {
+void checkplayer() {
 	for (int i = 0; i < 4; i++) {
-		PlayerPos[i] = vec4(Player[i].x, Player[i].y, 0, 1);
-		PlayerPos[i] = Model * PlayerPos[i];
-		cout << i << " : " << PlayerPos[0].x << " " << PlayerPos[0].y << endl;
+		playerPos[i] = vec4(player[i].x, player[i].y, 0, 1);
+		playerPos[i] = Model * playerPos[i];
+		cout << i << " : " << playerPos[0].x << " " << playerPos[0].y << endl;
 	}
 }
 
-void checkground() {
-	
-}
-
-
-void DrawPlayer() {
-
+void Drawplayer() {
 
 	glUseProgram(program);
-	_Camera = glGetUniformLocation(program, "cameraPos");
+
 	_Proj = glGetUniformLocation(program, "proj");
 	_View = glGetUniformLocation(program, "view");
 	_Model = glGetUniformLocation(program, "model");
 
-	glUniform3fv(_Camera, 1, &CameraPos[0]);
 	glUniformMatrix4fv(_Proj, 1, GL_FALSE, &Projection[0][0]);
 	glUniformMatrix4fv(_View, 1, GL_FALSE, &View[0][0]);
 	glUniformMatrix4fv(_Model, 1, GL_FALSE, &Model[0][0]);
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0);
 	if (state == 0)
-		glBindTexture(GL_TEXTURE_2D, IdleTex[texnum]);
-	else if (state == 1)
-		glBindTexture(GL_TEXTURE_2D, RunTex[texnum]);
-	else if (state == 2)
-		glBindTexture(GL_TEXTURE_2D, RunTex[texnum]);
+		glBindTexture(GL_TEXTURE_2D, Tex[0]);
+	else
+		glBindTexture(GL_TEXTURE_2D, Tex[texnum]);
 
 	float tri_pos[] = {
 		//position					//UV
-		Player[0].x, Player[0].y,  Playeruv[0].x, Playeruv[0].y,
-		Player[1].x, Player[1].y,  Playeruv[1].x, Playeruv[1].y,
-		Player[2].x, Player[2].y,  Playeruv[2].x, Playeruv[2].y,
+		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
+		player[1].x, player[1].y,  player_UV[1].x, player_UV[1].y,
+		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
 
-		Player[0].x, Player[0].y,  Playeruv[0].x, Playeruv[0].y,
-		Player[2].x, Player[2].y,  Playeruv[2].x, Playeruv[2].y,
-		Player[3].x, Player[3].y,  Playeruv[3].x, Playeruv[3].y,
+		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
+		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
+		player[3].x, player[3].y,  player_UV[3].x, player_UV[3].y,
 	};
 
 	glGenVertexArrays(1, &vao);
@@ -159,15 +100,56 @@ void DrawPlayer() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	glUniform1i(glGetUniformLocation(program, "TextureM"), 1);
+	glUniform1i(glGetUniformLocation(program, "TextureM"), 0);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 	glBindVertexArray(0);
-	glUseProgram(0);
 
 }
 
+void DrawplayerArray() {
+
+	glUseProgram(programArray);
+
+	_Proj = glGetUniformLocation(programArray, "proj");
+	_View = glGetUniformLocation(programArray, "view");
+	_Model = glGetUniformLocation(programArray, "model");
+
+	glUniformMatrix4fv(_Proj, 1, GL_FALSE, &Projection[0][0]);
+	glUniformMatrix4fv(_View, 1, GL_FALSE, &View[0][0]);
+	glUniformMatrix4fv(_Model, 1, GL_FALSE, &Model[0][0]);
+
+	float tri_pos[] = {
+		//position					//UV
+		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
+		player[1].x, player[1].y,  player_UV[1].x, player_UV[1].y,
+		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
+
+		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
+		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
+		player[3].x, player[3].y,  player_UV[3].x, player_UV[3].y,
+	};
+
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tri_pos), &tri_pos, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	glUniform1i(glGetUniformLocation(programArray, "TexArray"), 0);
+	GLuint index = glGetUniformLocation(programArray, "SpriteIndex");
+	//glUniform1i(index, 0);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
+	glBindVertexArray(0);
+}
+
 void display() {
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/////////////////////////設定相機/////////////////////////
@@ -175,14 +157,10 @@ void display() {
 	Projection = ortho(-300.0f, 300.0f, -300.0f, 300.0f, 0.1f, 100.0f);
 	View = lookAt(CameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-	updateModels();
-	checkPlayer();
-	checkground();
-	DrawPlayer();
+	updateModels();	
+	Drawplayer();
 
-	//cout << is_ground << endl;
-
-	glutSwapBuffers();//調換前台和後台buffer ,當後臺buffer畫完和前台buffer交換使我們看見它
+	glutSwapBuffers();
 }
 
 void init() {
@@ -197,126 +175,73 @@ void init() {
 		{ GL_NONE, NULL } };
 
 	ShaderInfo ArrayTex[] = {
-	{ GL_VERTEX_SHADER, "Shader/ArrayTexture.vs" },//vertex shader
-	{ GL_FRAGMENT_SHADER, "Shader/ArrayTexture.fs" },//fragment shader
-	{ GL_NONE, NULL } };
+		{ GL_VERTEX_SHADER, "Shader/ArrayTexture.vs" },//vertex shader
+		{ GL_FRAGMENT_SHADER, "Shader/ArrayTexture.fs" },//fragment shader
+		{ GL_NONE, NULL } };
 
 	program = LoadShaders(Sshaders);//讀取shader
+	programArray = LoadShaders(ArrayTex);
 
+	player[0] = Point(-300, -300);
+	player[1] = Point(-300 + player_WIDTH, -300);
 
-	Player[0].x = 0.0 - 300;
-	Player[0].y = 0.0 - 300;
-	Player[1].x = Player[0].x + PLAYER_WIDTH;
-	Player[1].y = Player[0].y;
-	Player[2].x = Player[0].x + PLAYER_WIDTH;
-	Player[2].y = Player[0].y + PLAYER_HEIGHT;
-	Player[3].x = Player[0].x;
-	Player[3].y = Player[0].y + PLAYER_HEIGHT;
+	player[2] = Point(-300 + player_WIDTH, -300 + player_HEIGHT);
+	player[3] = Point(-300 , -300 + player_HEIGHT);
 
-	Playeruv[0].x = 0.0; Playeruv[0].y = 0.0;
-	Playeruv[1].x = 1.0; Playeruv[1].y = 0.0;
-	Playeruv[2].x = 1.0; Playeruv[2].y = 1.0;
-	Playeruv[3].x = 0.0; Playeruv[3].y = 1.0;
-
-	tempR[0].x = Playeruv[0].x; tempR[0].y = Playeruv[0].y;
-	tempR[1].x = Playeruv[1].x; tempR[1].y = Playeruv[1].y;
-	tempR[2].x = Playeruv[2].x; tempR[2].y = Playeruv[2].y;
-	tempR[3].x = Playeruv[3].x; tempR[3].y = Playeruv[3].y;
-
-	tempL[0].x = Playeruv[1].x; tempL[0].y = Playeruv[1].y;
-	tempL[1].x = Playeruv[0].x; tempL[1].y = Playeruv[0].y;
-	tempL[2].x = Playeruv[3].x; tempL[2].y = Playeruv[3].y;
-	tempL[3].x = Playeruv[2].x; tempL[3].y = Playeruv[2].y;
-
+	player_UV[0] = Point(0, 0);
+	player_UV[1] = Point(1, 0);
+	player_UV[2] = Point(1, 1);
+	player_UV[3] = Point(0, 1);
 }
 
 void PressKey(unsigned char key, int x, int y) {
 
 	switch (key)
 	{
-	case 'd':
-		Playeruv[0] = tempR[0];
-		Playeruv[1] = tempR[1];
-		Playeruv[2] = tempR[2];
-		Playeruv[3] = tempR[3];
-		is_Move = 1;
-		state = 1;
-		break;
-	case 'a':
-		Playeruv[0] = tempL[0];
-		Playeruv[1] = tempL[1];
-		Playeruv[2] = tempL[2];
-		Playeruv[3] = tempL[3];
-		is_Move = 2;
-		state = 2;
-		break;
+		case 'd':
+			player_UV[0] = Point(0, 0);
+			player_UV[1] = Point(1, 0);
+			player_UV[2] = Point(1, 1);
+			player_UV[3] = Point(0, 1);
+			moveRight = true;
+			moveNow = true;
+			state = 1;
+			break;
+		case 'a':
+			player_UV[0] = Point(1, 0);
+			player_UV[1] = Point(0, 0);
+			player_UV[2] = Point(0, 1);
+			player_UV[3] = Point(1, 1);
+			moveRight = false;
+			moveNow = true;
+			state = 1;
+			break;
+		case 's':
+			moveNow = false;
+			state = 0;
+			break;
+
 	}
 	glutPostRedisplay();
 }
-
-void PressUp(unsigned char key, int x, int y) {
-	
-	switch (key)
-	{
-	case 'd':
-		texnum = 0;
-		is_Move = 0;
-		state = 0;
-		break;
-	case 'a':
-		texnum = 0;
-		is_Move = 0;
-		state = 0;
-		break;
-	}
-	glutPostRedisplay();
-}
-
 
 
 void Timer(int x) {
 
- 	if (is_Move == 1) move_x += Player_Speed;
- 	else if (is_Move == 2) move_x -= Player_Speed;
+ 	if (moveRight && moveNow) 
+		move_x += player_Speed;
+ 	else if(moveNow)
+		move_x -= player_Speed;
  
  	switch (state)
  	{
- 	case 0:
- 		texnum = (texnum + 1 == 12) ? 0 : texnum + 1;
- 		break;
- 	case 1:
- 		texnum = (texnum + 1 == 18) ? 0 : texnum + 1;
- 		break;
- 	case 2:
- 		texnum = (texnum + 1 == 18) ? 0 : texnum + 1;
- 		break;
- 	case 3:
- 		if (is_ground == 0) {
- 			if (jump_y < 50) {
- 				jump_y += Player_Speed;
- 			}
- 			else if (jump_y == 50) {
- 				is_ground = 1;
- 			}
- 		}
- 		else if (is_ground == 1) {
- 			if (jump_y > 0) {
- 				jump_y -= Player_Speed;
- 			}
- 			else if (jump_y == 0) {
- 				if (is_Move != 0)state = tempstate;
- 				else if (is_Move == 0)state = 0;
- 				is_ground = 0;
- 			}
- 		}
- 		break;
+ 		case 0:
+ 			texnum = 0;
+ 			break;
+ 		case 1:
+ 			texnum = (texnum + 1 >= 6) ? 1 : texnum + 1;
+ 			break;
  	}
- 	//cout << is_Move << endl;
-
-// 	currentTime = glutGet(GLUT_ELAPSED_TIME);
-// 	spritePlayTime += (currentTime - lastTime) / 1000.0f;
-// 	spriteIndex = (int)(spritePlayTime * 1 + 0) % 12;
-// 	lastTime = currentTime;
 
 	glutTimerFunc(50, Timer, 0);
 	glutPostRedisplay();
@@ -332,7 +257,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(10, 10);
-	glutCreateWindow("OpenGL 4.3 - Robot");
+	glutCreateWindow("Project2");
 
 	glewExperimental = GL_TRUE; //置於glewInit()之前
 	if (glewInit()) {
@@ -345,7 +270,6 @@ int main(int argc, char** argv) {
 
 	glutDisplayFunc(display);
 	glutKeyboardFunc(PressKey);
-	glutKeyboardUpFunc(PressUp);
 	glutTimerFunc(50, Timer, 0);
 
 	glutMainLoop();

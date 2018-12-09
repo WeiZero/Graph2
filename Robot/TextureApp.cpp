@@ -206,9 +206,9 @@ GLuint TextureApp::GenTextureArray(char* filepath, int rowCount, int colCount) {
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, w);
 
 		int layer = 0;
-		for (int row = rowCount - 1; row >= 0; --row)
+		for (int row = rowCount - 1; row >= 0; row--)
 		{
-			for (int col = 0; col < colCount; ++col)
+			for (int col = 0; col < colCount; col++)
 			{
 				GLubyte *data = image + (row * w * subHeight + col * subWidth) * 4;
 				glTexSubImage2D(GL_TEXTURE_2D_ARRAY, 0, subWidth, subHeight, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -227,47 +227,4 @@ GLuint TextureApp::GenTextureArray(char* filepath, int rowCount, int colCount) {
 		
 	}
 	return textureID;
-}
-
-void TextureApp::ScreenShot(std::string& file)
-{
-	GLint vp[4];
-	glGetIntegerv( GL_VIEWPORT, vp );
-
-	int x,y, w,h;
-	x = vp[0];
-	y = vp[1];
-	w = vp[2];
-	h = vp[3];
-
-	unsigned char *bottomup_pixel = (unsigned char *) malloc( w*h*3*sizeof(unsigned char) );
-	unsigned char *topdown_pixel = (unsigned char *) malloc( w*h*3*sizeof(unsigned char) );
-
-	//Byte alignment (that is, no alignment)
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glReadPixels( x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, bottomup_pixel);
-
-	for(int j=0; j<h; j++ )
-		memcpy( &topdown_pixel[j*w*3], &bottomup_pixel[(h-j-1)*w*3], w*3*sizeof(unsigned char) );
-
-
-	FILE *f0 = fopen( (file+".ppm").c_str(), "wb" );
-	if( f0==NULL )
-	{
-		printf( "[Error] : SaveScreen(), Cannot open %s for writting.\n", (file+".ppm").c_str() );
-		exit(-1);
-	}
-
-	fprintf( f0, "P6\n%d %d\n255\n", w, h);
-	fwrite( topdown_pixel, sizeof(unsigned char), w*h*3, f0);
-	fclose( f0 );
-
-	free(bottomup_pixel);
-	free(topdown_pixel);
-
-	IplImage *pic = cvLoadImage((file+".ppm").c_str(),-1);
-	cvSaveImage((file+".jpg").c_str(),pic);
-	remove((file+".ppm").c_str());
-
-	std::cout<<file<<" Saved"<<std::endl;
 }

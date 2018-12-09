@@ -9,8 +9,6 @@ uniform sampler2D TextureM;
 
 void main()
 {
-	vec4 col = texture(TextureM, TexCoords.st);
-	if(col.a < 0.1)
-        discard;
+	vec4 col = texture(TextureM, TexCoords);
     Fcolor = col;
 }
