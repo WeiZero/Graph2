@@ -1,4 +1,11 @@
-﻿  main.cpp
+﻿  TextureApp.cpp
+e:\code\vs\graph2\include\opencv2\flann\dist.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+e:\code\vs\graph2\include\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 請參閱 'fopen' 的宣告
+e:\code\vs\graph2\include\opencv2\legacy\compat.hpp : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
+e:\code\vs\graph2\robot\textureapp.cpp(12): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 請參閱 'fopen' 的宣告
+  main.cpp
 e:\code\vs\graph2\include\opencv2\flann\dist.h : warning C4819: 檔案含有無法在目前字碼頁 (950) 中表示的字元。請以 Unicode 格式儲存檔案以防止資料遺失
 e:\code\vs\graph2\include\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: 請參閱 'fopen' 的宣告
@@ -8,7 +15,8 @@ e:\code\vs\graph2\robot\main.cpp(101): warning C4305: '引數': 從 'int' 轉換
 e:\code\vs\graph2\robot\main.cpp(101): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
 e:\code\vs\graph2\robot\main.cpp(141): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
 e:\code\vs\graph2\robot\main.cpp(141): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
-e:\code\vs\graph2\robot\main.cpp(186): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\robot\main.cpp(188): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\robot\main.cpp(189): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\robot\main.cpp(190): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\robot\main.cpp(192): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\robot\main.cpp(193): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+  正在產生程式碼...
   Robot.vcxproj -> E:\code\VS\Graph2\Robot\Debug\Robot.exe

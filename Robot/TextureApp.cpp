@@ -196,14 +196,12 @@ GLuint TextureApp::GenTextureArray(char* filepath, int rowCount, int colCount) {
 
 		glGenTextures(1, &textureID);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, textureID);
-		glTexStorage2D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA, subWidth, subHeight);
+		glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA, subWidth, subHeight, rowCount * colCount);
 
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, w);
 
 		int layer = 0;
 		for (int row = rowCount - 1; row >= 0; row--)
@@ -211,17 +209,11 @@ GLuint TextureApp::GenTextureArray(char* filepath, int rowCount, int colCount) {
 			for (int col = 0; col < colCount; col++)
 			{
 				GLubyte *data = image + (row * w * subHeight + col * subWidth) * 4;
-				glTexSubImage2D(GL_TEXTURE_2D_ARRAY, 0, subWidth, subHeight, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
-				++layer;
-
-				if (layer >= spriteCount)
-				{
-					break;
-				}
+				glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, subWidth, subHeight,1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+				layer++;
 			}
 		}
-
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 		delete image;
 		

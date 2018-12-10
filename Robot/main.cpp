@@ -73,12 +73,12 @@ void Drawplayer() {
 	glUniformMatrix4fv(_View, 1, GL_FALSE, &View[0][0]);
 	glUniformMatrix4fv(_Model, 1, GL_FALSE, &Model[0][0]);
 
-	glActiveTexture(GL_TEXTURE0);
+	
 	if (state == 0)
 		glBindTexture(GL_TEXTURE_2D, Tex[0]);
 	else
 		glBindTexture(GL_TEXTURE_2D, Tex[texnum]);
-
+	cout << Tex[texnum] << endl;
 	float tri_pos[] = {
 		//position					//UV
 		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
@@ -139,9 +139,13 @@ void DrawplayerArray() {
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-	glUniform1i(glGetUniformLocation(programArray, "TexArray"), 0);
-	GLuint index = glGetUniformLocation(programArray, "SpriteIndex");
+	
+	if (texnum > 1)texnum = 1;
+	glUniform1i(glGetUniformLocation(programArray, "SpriteIndex"),texnum);
+	cout << TexArray << endl;
+	glActiveTexture(GL_TEXTURE0 + TexArray);
+	//glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	glUniform1i(glGetUniformLocation(programArray, "TexArray"), TexArray);
 	//glUniform1i(index, 0);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
@@ -158,7 +162,7 @@ void display() {
 	View = lookAt(CameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	updateModels();	
-	Drawplayer();
+	DrawplayerArray();
 
 	glutSwapBuffers();
 }
@@ -176,7 +180,7 @@ void init() {
 
 	ShaderInfo ArrayTex[] = {
 		{ GL_VERTEX_SHADER, "Shader/ArrayTexture.vs" },//vertex shader
-		{ GL_FRAGMENT_SHADER, "Shader/ArrayTexture.fs" },//fragment shader
+		{ GL_FRAGMENT_SHADER, "Shader/ArrayTexture2.fs" },//fragment shader
 		{ GL_NONE, NULL } };
 
 	program = LoadShaders(Sshaders);//Åª¨úshader
