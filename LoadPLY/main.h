@@ -21,31 +21,35 @@ using namespace glm;
 #define Player_Speed 5.0
 #define Player_JumpHeight 20
 
+#define player_Width 40.0
+#define player_Height 40.0
+#define player_Move_Speed 20
+#define player_Speed 5.0
+
 GLuint _ArrayProgram;
-
-GLuint _RunArray, _IdleArray, _JumpTex;
-
-float currentTime, spritePlayTime, lastTime;
-int SpriteIndex = 0;
 
 GLuint vao, vbo;
 
-glm::mat4 Model;
+// 人物操控
+mat4 Model;
 GLuint _Model;
 float move_x = 0.0, jump_y = 0.0;
 bool is_ground = 0;
 int is_Move = 0;
+bool moveRight = true;
+bool moveNow = false;
 int tempstate;
 int state = 0;
 
+// 視角設定
 mat4 Projection;
 mat4 View;
 vec3 CameraPos;
-
 GLuint _Comera, _Proj, _View;
 
-Point Player[4], Playeruv[4];
-glm::vec4 PlayerPos[4];
+// 紀錄資訊
+Point player[4], player_UV[4];
 
-Point tempR[4], tempL[4];
-Point nowground;
+// 圖片設定
+GLuint playerArrayTex;
+int SpriteIndex = 0;
