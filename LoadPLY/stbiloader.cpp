@@ -1,5 +1,5 @@
 #include "stbiloader.h"
-
+GLuint texnum = 0;
 GLuint stbiloader::Gentexture(char *filename) 
 {
 	char* format = filename;
@@ -42,7 +42,7 @@ GLuint stbiloader::Gentexture(char *filename)
 	return texture1;
 }
 
-GLuint stbiloader::GenArray_tex(char const *filename,int rowCount,int colCount) 
+GLuint stbiloader::GenArray_tex(char const *filename,int rowCount,int colCount)
 {
 	unsigned int textureID;
 	int width, height, nrChannels;
@@ -82,17 +82,13 @@ GLuint stbiloader::GenArray_tex(char const *filename,int rowCount,int colCount)
 				}
 			}
 		}
-
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-
-		stbi_image_free(Data);
+		//glBindTexture(GL_TEXTURE_2D_ARRAY, textureID);
+		//texnum++;	
 	}
 	else {
 		std::cout << "Failed to load texture" << std::endl;
 		return -1;
 	}
-
-
+	stbi_image_free(Data);
 	return textureID;
 }
