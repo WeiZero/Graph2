@@ -25,17 +25,15 @@ using namespace glm;
 
 GLuint playerArray;
 GLuint blockArray;
+GLuint BG;
 GLuint vao, vbo;
-
+GLuint vaoQuad, vboQuad;
 // 人物操控
 mat4 Model;
 GLuint _Model;
-float move_x = 0.0, jump_y = 0.0;
-bool is_ground = 0;
-int is_Move = 0;
+float move_x = 0.0;
 bool moveRight = true;
 bool moveNow = false;
-int tempstate;
 int state = 0;
 
 // 視角設定
@@ -51,7 +49,19 @@ Point player[4], player_UV[4];
 GLuint playerArrayTex;
 int SpriteIndex = 0;
 GLuint blockTex[6];
+GLuint BGTex;
 
+
+float quad[] = {
+	//position		//UV
+	-1, -1,		0, 0,
+	 1, -1,		1, 0,
+	 1,  1,		1, 1,
+
+	-1, -1,		0, 0,
+	 1,  1,		1, 1,
+	-1,  1,		0, 1
+};
 
 class Block {
 public:

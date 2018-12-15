@@ -1,7 +1,6 @@
 #include "main.h"
 
 void playerInit() {
-
 	player[0] = Point(-300, -300);
 	player[1] = Point(-300 + player_Width, -300);
 
@@ -13,12 +12,32 @@ void playerInit() {
 	player_UV[2] = Point(1, 1);
 	player_UV[3] = Point(0, 1);
 	playerArrayTex = stbiloader::GenArray_tex("Texture/1x.png", 1, 7);
-	
+	float tri_pos[] = {
+		//position					//UV
+		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
+		player[1].x, player[1].y,  player_UV[1].x, player_UV[1].y,
+		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
+
+		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
+		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
+		player[3].x, player[3].y,  player_UV[3].x, player_UV[3].y,
+	};
 	glUseProgram(playerArray);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, playerArrayTex);
 	glUniform1i(glGetUniformLocation(playerArray, "Array_tex"), 0);
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tri_pos), &tri_pos, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 }
-void blockInit() {
+void TexInit() {
+	BGTex = stbiloader::Gentexture("Texture/bg.png");
 	blockTex[0] = stbiloader::Gentexture("Texture/1.png");
 	blockTex[1] = stbiloader::Gentexture("Texture/2.png");
 	blockTex[2] = stbiloader::Gentexture("Texture/3.png");
@@ -26,16 +45,33 @@ void blockInit() {
 	blockTex[4] = stbiloader::Gentexture("Texture/5.png");
 	blockTex[5] = stbiloader::Gentexture("Texture/6.png");
 }
+void BgInit() {
+	
+	glUseProgram(BG);
+	_Proj = glGetUniformLocation(BG, "proj");
+	_View = glGetUniformLocation(BG, "view");
+
+	glBindTexture(GL_TEXTURE_2D, BGTex);
+	glUniformMatrix4fv(_Proj, 1, GL_FALSE, &Projection[0][0]);
+	glUniformMatrix4fv(_View, 1, GL_FALSE, &View[0][0]);
+
+	glGenVertexArrays(1, &vaoQuad);
+	glGenBuffers(1, &vboQuad);
+	glBindVertexArray(vaoQuad);
+	glBindBuffer(GL_ARRAY_BUFFER, vboQuad);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), &quad, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
 
 void init() {
 	glClearColor(0.0, 0.0, 0.0, 1);//black screen
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_LIGHTING);
-	//glDepthFunc(GL_LESS);
-	//glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
+
 	CameraPos = vec3(0.0f, 0.0f, 10.0f);
 	Projection = ortho(-300.0f, 300.0f, -300.0f, 300.0f, 0.1f, 100.0f);
 	View = lookAt(CameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
@@ -45,14 +81,19 @@ void init() {
 		{ GL_NONE, NULL } };
 	ShaderInfo blockArrayShader[] = {
 		{ GL_VERTEX_SHADER, "Shader/block.vs" },//vertex shader
-	{ GL_FRAGMENT_SHADER, "Shader/block.fs" },//fragment shader
-	{ GL_NONE, NULL } };
+		{ GL_FRAGMENT_SHADER, "Shader/block.fs" },//fragment shader
+		{ GL_NONE, NULL } };
+	ShaderInfo backgroundShader[] = {
+		{ GL_VERTEX_SHADER, "Shader/background.vs" },//vertex shader
+		{ GL_FRAGMENT_SHADER, "Shader/background.fs" },//fragment shader
+		{ GL_NONE, NULL } };
 
 	playerArray = LoadShaders(playerArrayShader);
 	blockArray = LoadShaders(blockArrayShader);
-	
-	blockInit();
+	BG = LoadShaders(backgroundShader);
+	TexInit();
 	playerInit();
+	BgInit();
 }
 
 #define DOR(angle) (angle*3.1415/180);
@@ -90,7 +131,6 @@ void updateModels() {
 	Model = translate(move_x, 0., 0.0);
 }
 
-
 void DrawPlayer()
 {
 	glUseProgram(playerArray);
@@ -118,18 +158,8 @@ void DrawPlayer()
 		player[3].x, player[3].y,  player_UV[3].x, player_UV[3].y,
 	};
 
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tri_pos), &tri_pos, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
-	glUseProgram(0);
 }
 
 void Drawblock() {
@@ -169,17 +199,20 @@ void Drawblock() {
 		glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 	}
 }
+void DrawBG() {
+	glUseProgram(BG);
+	glBindTexture(GL_TEXTURE_2D, BGTex);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), &quad, GL_STATIC_DRAW);
+	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
+}
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/////////////////////////設定相機/////////////////////////
-
-	
-
 	updateModels();
 	DrawPlayer();
-	Drawblock();
+	//Drawblock();
+	DrawBG();
 	glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();//調換前台和後台buffer ,當後臺buffer畫完和前台buffer交換使我們看見它
 }
@@ -218,7 +251,7 @@ void PressKey(unsigned char key, int x, int y) {
 
 void Timer(int x) {
 
-	if (x % 100000000 == 0) {
+	/*if (x % 100000000 == 0) {
 		int s = rand() % 560 - 300;
 		if (blockNum >= 6)
 			blockNum = 0;
@@ -231,9 +264,7 @@ void Timer(int x) {
 				i--;
 			}
 		}
-	}
-	
-
+	}*/
 
  	switch (state)
  	{
@@ -273,8 +304,6 @@ int main(int argc, char** argv)
 	glutTimerFunc(50, Timer, 0);
 
 	init();
-
-
 	glutMainLoop();
 
 	system("Pause");
