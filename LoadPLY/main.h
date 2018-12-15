@@ -23,13 +23,19 @@ using namespace glm;
 #define block_Height 40.0
 #define block_Speed 10.0
 
-#define NUM_STARS 100.0
+#define NUM_STARS 500
 
+// shader program
 GLuint playerArray;
 GLuint blockArray;
 GLuint BG;
-GLuint vao, vbo;
+GLuint particle;
+
+// Tex Bind
+GLuint vaoPlayer, vboPlayer;
 GLuint vaoQuad, vboQuad;
+GLuint vaoParticle, vboParticle;
+
 // 人物操控
 mat4 Model;
 GLuint _Model;
@@ -45,14 +51,20 @@ vec3 CameraPos;
 GLuint _Camera, _Proj, _View;
 
 // 紀錄資訊
-Point player[4], player_UV[4];
+Point player[4];
 
 // 圖片設定
 GLuint playerArrayTex;
 int SpriteIndex = 0;
-GLuint blockTex[6];
 GLuint BGTex;
+GLuint blockTex[6];
+GLuint ParticleTex;
 
+struct star_t
+{
+	glm::vec3     position;
+	glm::vec3     color;
+};
 
 float quad[] = {
 	//position		//UV
