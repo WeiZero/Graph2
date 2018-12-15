@@ -1,5 +1,32 @@
 #include "main.h"
 
+void BBInit() {
+
+}
+
+void DrawBB() {
+	/*
+	float f_timer_cnt = glutGet(GLUT_ELAPSED_TIME);
+	float currentTime = f_timer_cnt * 0.001f;
+
+	currentTime *= 0.1f;
+	currentTime -= floor(currentTime);
+
+	glUniform1f(time_Loc, currentTime);	// GLUINT 時間
+	glUniformMatrix4fv(proj_location, 1, GL_FALSE, &proj_matrix[0][0]);	// PROJ
+
+	glEnable(GL_POINT_SPRITE);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture);	// 圖片
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glDrawArrays(GL_POINTS, 0, NUM_STARS);	// 總數
+	*/
+}
+
 void playerInit() {
 	player[0] = Point(-300, -300);
 	player[1] = Point(-300 + player_Width, -300);
@@ -38,12 +65,6 @@ void playerInit() {
 }
 void TexInit() {
 	BGTex = stbiloader::Gentexture("Texture/bg.png");
-	blockTex[0] = stbiloader::Gentexture("Texture/1.png");
-	blockTex[1] = stbiloader::Gentexture("Texture/2.png");
-	blockTex[2] = stbiloader::Gentexture("Texture/3.png");
-	blockTex[3] = stbiloader::Gentexture("Texture/4.png");
-	blockTex[4] = stbiloader::Gentexture("Texture/5.png");
-	blockTex[5] = stbiloader::Gentexture("Texture/6.png");
 }
 void BgInit() {
 	
