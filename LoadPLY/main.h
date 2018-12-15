@@ -16,11 +16,11 @@ using namespace glm;
 #include "point.h"
 
 #define player_Width 40.0
-#define player_Height 40.0
+#define player_Height 30.0
 #define player_Speed 5.0
 
-#define block_Width 30.0
-#define block_Height 40.0
+#define block_Width 60.0
+#define block_Height 60.0
 #define block_Speed 10.0
 
 #define NUM_STARS 500
@@ -30,6 +30,7 @@ GLuint playerArray;
 GLuint blockArray;
 GLuint BG;
 GLuint particle;
+GLuint FBO;
 
 // Tex Bind
 GLuint vaoPlayer, vboPlayer;
@@ -38,16 +39,16 @@ GLuint vaoQuad, vboQuad;
 GLuint vaoParticle, vboParticle;
 
 // 人物操控
-mat4 Model;
+mat4 Model[2];
 GLuint _Model;
-float move_x = 0.0;
-int moveRight = 1;
-bool moveNow = false;
-int state = 0;
+float move_x[2] = { 0.0 };
+int moveRight[2] = { 1 };
+bool moveNow[2] = { false };
+int state[2] = { 0 };
 
 // 視角設定
 mat4 Projection;
-mat4 View;
+mat4 View[2];
 vec3 CameraPos;
 GLuint _Camera, _Proj, _View;
 
@@ -56,10 +57,13 @@ Point player[4];
 
 // 圖片設定
 GLuint playerArrayTex;
-int SpriteIndex = 0;
+int SpriteIndex[2] = { 0 };
 GLuint BGTex;
 GLuint blockTex[6];
 GLuint ParticleTex;
+GLuint framebuffer[2], textureColorbuffer[2];
+GLuint quadVAO, quadVBO;
+GLuint screenTexture1, screenTexture2;
 
 struct star_t
 {
@@ -91,10 +95,10 @@ public:
 	}
 	Block(int in, int x) {
 		index = in;
-		pos[0] = Point(x - block_Width, 300 - block_Height);
-		pos[1] = Point(x, 300 - block_Height);
-		pos[2] = Point(x, 300);
-		pos[3] = Point(x - block_Width, 300);
+		pos[0] = Point(x - block_Width, 300 - block_Height / 2);
+		pos[1] = Point(x, 300 - block_Height / 2);
+		pos[2] = Point(x, 300 + block_Height / 2);
+		pos[3] = Point(x - block_Width, 300 + block_Height / 2);
 	}
 	int downY(int y) {
 		pos[0].y -= y;
