@@ -23,6 +23,8 @@ using namespace glm;
 #define block_Height 40.0
 #define block_Speed 10.0
 
+#define NUM_STARS 100.0
+
 GLuint playerArray;
 GLuint blockArray;
 GLuint BG;
@@ -32,7 +34,7 @@ GLuint vaoQuad, vboQuad;
 mat4 Model;
 GLuint _Model;
 float move_x = 0.0;
-bool moveRight = true;
+int moveRight = 1;
 bool moveNow = false;
 int state = 0;
 

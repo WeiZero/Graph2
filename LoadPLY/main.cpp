@@ -1,31 +1,5 @@
 #include "main.h"
 
-void BBInit() {
-
-}
-
-void DrawBB() {
-	/*
-	float f_timer_cnt = glutGet(GLUT_ELAPSED_TIME);
-	float currentTime = f_timer_cnt * 0.001f;
-
-	currentTime *= 0.1f;
-	currentTime -= floor(currentTime);
-
-	glUniform1f(time_Loc, currentTime);	// GLUINT 時間
-	glUniformMatrix4fv(proj_location, 1, GL_FALSE, &proj_matrix[0][0]);	// PROJ
-
-	glEnable(GL_POINT_SPRITE);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_texture);	// 圖片
-	glEnable(GL_PROGRAM_POINT_SIZE);
-	glDrawArrays(GL_POINTS, 0, NUM_STARS);	// 總數
-	*/
-}
 
 void playerInit() {
 	player[0] = Point(-300, -300);
@@ -50,8 +24,14 @@ void playerInit() {
 		player[3].x, player[3].y,  player_UV[3].x, player_UV[3].y,
 	};
 	glUseProgram(playerArray);
+	_Proj = glGetUniformLocation(playerArray, "proj");
+	_View = glGetUniformLocation(playerArray, "view");
+
+	glUniformMatrix4fv(_Proj, 1, GL_FALSE, &Projection[0][0]);
+	glUniformMatrix4fv(_View, 1, GL_FALSE, &View[0][0]);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, playerArrayTex);
 	glUniform1i(glGetUniformLocation(playerArray, "Array_tex"), 0);
+	glUniform1i(glGetUniformLocation(playerArray, "dir"), moveRight);
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 	glBindVertexArray(vao);
@@ -61,7 +41,6 @@ void playerInit() {
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 }
 void TexInit() {
 	BGTex = stbiloader::Gentexture("Texture/bg.png");
@@ -145,9 +124,6 @@ mat4 rotate(float angle, float x, float y, float z) {
 	return M;
 }
 void updateModels() {
-	glm::mat4 Translation = glm::mat4(1.0f);
-	glm::mat4 Scale = glm::mat4(1.0f);
-	glm::mat4 Rotate = glm::mat4(1.0f);
 	Model = glm::mat4(1.0f);
 	Model = translate(move_x, 0., 0.0);
 }
@@ -167,7 +143,7 @@ void DrawPlayer()
 		glUniform1i(glGetUniformLocation(playerArray, "SpriteIndex"), 0);
 	else if (state == 1) 
 		glUniform1i(glGetUniformLocation(playerArray, "SpriteIndex"), SpriteIndex);
-	
+
 	float tri_pos[] = {
 		//position					//UV
 		player[0].x, player[0].y,  player_UV[0].x, player_UV[0].y,
@@ -178,8 +154,8 @@ void DrawPlayer()
 		player[2].x, player[2].y,  player_UV[2].x, player_UV[2].y,
 		player[3].x, player[3].y,  player_UV[3].x, player_UV[3].y,
 	};
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tri_pos), &tri_pos, GL_STATIC_DRAW);
+	glBindVertexArray(vao);
+	glUniform1i(glGetUniformLocation(playerArray, "dir"), moveRight);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 }
 
@@ -222,8 +198,7 @@ void Drawblock() {
 }
 void DrawBG() {
 	glUseProgram(BG);
-	glBindTexture(GL_TEXTURE_2D, BGTex);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), &quad, GL_STATIC_DRAW);
+	glBindVertexArray(vaoQuad);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 }
 
@@ -248,7 +223,7 @@ void PressKey(unsigned char key, int x, int y) {
 		player_UV[1] = Point(1, 0);
 		player_UV[2] = Point(1, 1);
 		player_UV[3] = Point(0, 1);
-		moveRight = true;
+		moveRight = 1;
 		moveNow = true;
 		state = 1;
 		break;
@@ -257,7 +232,7 @@ void PressKey(unsigned char key, int x, int y) {
 		player_UV[1] = Point(0, 0);
 		player_UV[2] = Point(0, 1);
 		player_UV[3] = Point(1, 1);
-		moveRight = false;
+		moveRight = 0;
 		moveNow = true;
 		state = 1;
 		break;
@@ -272,28 +247,13 @@ void PressKey(unsigned char key, int x, int y) {
 
 void Timer(int x) {
 
-	/*if (x % 100000000 == 0) {
-		int s = rand() % 560 - 300;
-		if (blockNum >= 6)
-			blockNum = 0;
-		Block block(blockNum, s);
-		blockList.push_back(block);
-		blockNum++;
-		for (int i = 0; i < blockList.size(); i++) {
-			if (blockList[i].downY(20)<=-330){
-				blockList.erase(blockList.begin()+i);
-				i--;
-			}
-		}
-	}*/
-
  	switch (state)
  	{
  		case 0:
 			SpriteIndex = 0;
  			break;
  		case 1:
-			if (moveRight && moveNow)
+			if (moveRight == 1 && moveNow)
 				move_x += player_Speed;
 			else if (moveNow)
 				move_x -= player_Speed;
