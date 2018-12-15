@@ -33,6 +33,7 @@ GLuint particle;
 
 // Tex Bind
 GLuint vaoPlayer, vboPlayer;
+GLuint vaoBlock, vboBlock;
 GLuint vaoQuad, vboQuad;
 GLuint vaoParticle, vboParticle;
 
@@ -70,11 +71,11 @@ float quad[] = {
 	//position		//UV
 	-1, -1,		0, 0,
 	 1, -1,		1, 0,
-	 1,  1,		1, 1,
+	 1,  1.5,		1, 1,
 
 	-1, -1,		0, 0,
-	 1,  1,		1, 1,
-	-1,  1,		0, 1
+	 1,   1.5,		1, 1,
+	-1,   1.5,		0, 1
 };
 
 class Block {

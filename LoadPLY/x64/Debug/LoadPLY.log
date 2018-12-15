@@ -1,20 +1,22 @@
 ﻿  main.cpp
-e:\code\vs\graph2\loadply\main.h(86): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.h(87): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.h(89): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.h(93): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.h(88): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.h(90): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.h(94): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.h(96): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.h(103): warning C4244: 'return': 將 'float' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.h(95): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.h(97): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.h(104): warning C4244: 'return': 將 'float' 轉換為 'int'，由於類型不同，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.cpp(18): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.cpp(20): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.cpp(21): warning C4244: '引數': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.cpp(51): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
 e:\code\vs\graph2\loadply\main.cpp(51): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
-e:\code\vs\graph2\loadply\main.cpp(76): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.cpp(76): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
-e:\code\vs\graph2\loadply\main.cpp(167): warning C4244: '正在初始化': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.cpp(241): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
-e:\code\vs\graph2\loadply\main.cpp(241): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
-e:\code\vs\graph2\loadply\main.cpp(261): warning C4244: '正在初始化': 將 'int' 轉換為 'float'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.cpp(82): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.cpp(82): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
+e:\code\vs\graph2\loadply\main.cpp(102): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.cpp(102): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
+e:\code\vs\graph2\loadply\main.cpp(194): warning C4244: '正在初始化': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.cpp(268): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+e:\code\vs\graph2\loadply\main.cpp(268): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
+e:\code\vs\graph2\loadply\main.cpp(288): warning C4244: '正在初始化': 將 'int' 轉換為 'float'，由於類型不同，可能導致資料遺失
   LoadPLY.vcxproj -> E:\code\VS\Graph2\x64\Debug\LoadPLY.exe

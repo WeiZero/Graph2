@@ -51,8 +51,14 @@ void playerInit() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 void TexInit() {
-	BGTex = stbiloader::Gentexture("Texture/bg.png");
+	BGTex = stbiloader::Gentexture("Texture/water.png");
 	ParticleTex = stbiloader::Gentexture("Texture/effect.png");
+	blockTex[0] = stbiloader::Gentexture("Texture/1.png");
+	blockTex[1] = stbiloader::Gentexture("Texture/2.png");
+	blockTex[2] = stbiloader::Gentexture("Texture/3.png");
+	blockTex[3] = stbiloader::Gentexture("Texture/4.png");
+	blockTex[4] = stbiloader::Gentexture("Texture/5.png");
+	blockTex[5] = stbiloader::Gentexture("Texture/6.png");
 }
 
 void BgInit() {
@@ -70,6 +76,26 @@ void BgInit() {
 	glBindVertexArray(vaoQuad);
 	glBindBuffer(GL_ARRAY_BUFFER, vboQuad);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), &quad, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
+
+void blockInit() {
+
+	float tri_pos[] = { 0 };
+	glUseProgram(blockArray);
+	glBindTexture(GL_TEXTURE_2D,blockTex[0]);
+	_Proj = glGetUniformLocation(blockArray, "proj");
+	_View = glGetUniformLocation(blockArray, "view");
+	glUniformMatrix4fv(_Proj, 1, GL_FALSE, &Projection[0][0]);
+	glUniformMatrix4fv(_View, 1, GL_FALSE, &View[0][0]);
+	glGenVertexArrays(1, &vaoBlock);
+	glGenBuffers(1, &vboBlock);
+	glBindVertexArray(vaoBlock);
+	glBindBuffer(GL_ARRAY_BUFFER, vboBlock);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tri_pos), &tri_pos, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
 	glEnableVertexAttribArray(1);
@@ -142,6 +168,7 @@ void init() {
 
 	TexInit();	
 	playerInit();
+	blockInit();
 	BgInit();
 	ParticleInit();
 }
@@ -230,10 +257,10 @@ void Drawblock() {
 			blockList[i].pos[3].x, blockList[i].pos[3].y,  0, 1,
 		};
 
-		glGenVertexArrays(1, &vaoPlayer);
-		glGenBuffers(1, &vboPlayer);
-		glBindVertexArray(vaoPlayer);
-		glBindBuffer(GL_ARRAY_BUFFER, vboPlayer);
+		glGenVertexArrays(1, &vaoBlock);
+		glGenBuffers(1, &vboBlock);
+		glBindVertexArray(vaoBlock);
+		glBindBuffer(GL_ARRAY_BUFFER, vboBlock);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(tri_pos), &tri_pos, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0 * sizeof(float)));
@@ -243,7 +270,7 @@ void Drawblock() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, blockTex[blockList[i].index]);
 		glUniform1i(glGetUniformLocation(blockTex[blockList[i].index], "Tex"), 0);
-		glBindVertexArray(vaoPlayer);
+		glBindVertexArray(vaoBlock);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
 	}
 }
@@ -282,10 +309,10 @@ void display() {
 	updateModels();
 	
 	DrawPlayer();
-	//Drawblock();
+	Drawblock();
 	
-	DrawBG();
-	DrawParticle();
+	//DrawBG();
+	//DrawParticle();
 
 	glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();//調換前台和後台buffer ,當後臺buffer畫完和前台buffer交換使我們看見它
@@ -315,7 +342,20 @@ void PressKey(unsigned char key, int x, int y) {
 
 
 void Timer(int x) {
-
+	if (x % 100000000 == 0) {
+		int s = rand() % 560 - 300;
+		if (blockNum >= 6)
+			blockNum = 0;
+		Block block(blockNum, s);
+		blockList.push_back(block);
+		blockNum++;
+		for (int i = 0; i < blockList.size(); i++) {
+			if (blockList[i].downY(20) <= -330) {
+				blockList.erase(blockList.begin() + i);
+				i--;
+			}
+		}
+	}
  	switch (state)
  	{
  		case 0:
