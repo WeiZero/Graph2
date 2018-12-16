@@ -1,7 +1,2 @@
-<<<<<<< HEAD:LoadPLY/x64/Debug/LoadPLY.tlog/LoadPLY.lastbuildstate
 #TargetFrameworkVersion=v4.0:PlatformToolSet=v140:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=8.1
-Debug|x64|D:\CSIE Program Homework\Graph2\|
-=======
-#TargetFrameworkVersion=v4.0:PlatformToolSet=v141:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=10.0.17134.0
-Release|x64|C:\Users\weizero\Desktop\Graph2\|
->>>>>>> 67909309c5486eac16757f7a2eb280db0073b0ef:LoadPLY/x64/Release/LoadPLY.tlog/LoadPLY.lastbuildstate
+Release|x64|D:\CSIE Program Homework\Graph2\|
