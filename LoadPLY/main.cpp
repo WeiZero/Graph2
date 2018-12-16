@@ -583,7 +583,7 @@ void Timer(int x) {
 		execAddGenBlockCount++;
 		if (execAddGenBlockCount > 250)//5¬í
 		{
-			if(genBlockCount > 1)
+			if(genBlockCount > 5)
 				genBlockCount--;
 			execAddGenBlockCount = 0;
 		}
