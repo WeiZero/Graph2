@@ -398,8 +398,9 @@ void display() {
 	glDisable(GL_DEPTH_TEST);
 	DrawScreen();
 	DrawBG();
-	DrawPlayer();
 	Drawblock();
+	DrawPlayer();
+	
 	
 	glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();//調換前台和後台buffer ,當後臺buffer畫完和前台buffer交換使我們看見它
