@@ -62,9 +62,9 @@ int SpriteIndex =  0 ;
 GLuint BGTex, BGTex2;
 GLuint blockTex[6];
 GLuint ParticleTex;
-GLuint framebuffer[2], textureColorbuffer[2];
+//GLuint framebuffer[2], textureColorbuffer[2];
 GLuint quadVAO, quadVBO;
-GLuint screenTexture1, screenTexture2;
+GLuint framebuffer, textureColorbuffer, renderbuffer;
 
 struct star_t
 {

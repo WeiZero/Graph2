@@ -22,11 +22,13 @@ c:\users\weizero\desktop\graph2\loadply\main.cpp(94): warning C4305: '引數': �
 c:\users\weizero\desktop\graph2\loadply\main.cpp(94): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
 c:\users\weizero\desktop\graph2\loadply\main.cpp(110): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
 c:\users\weizero\desktop\graph2\loadply\main.cpp(110): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
-c:\users\weizero\desktop\graph2\loadply\main.cpp(158): warning C4838: 從 'double' 到 'float' 的轉換必須是縮小轉換
-c:\users\weizero\desktop\graph2\loadply\main.cpp(158): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
-c:\users\weizero\desktop\graph2\loadply\main.cpp(239): warning C4244: '正在初始化': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
-c:\users\weizero\desktop\graph2\loadply\main.cpp(311): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
-c:\users\weizero\desktop\graph2\loadply\main.cpp(311): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
-c:\users\weizero\desktop\graph2\loadply\main.cpp(336): warning C4244: '正在初始化': 將 'int' 轉換為 'float'，由於類型不同，可能導致資料遺失
-c:\users\weizero\desktop\graph2\loadply\main.cpp(410): warning C4244: '正在初始化': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(180): warning C4838: 從 'double' 到 'float' 的轉換必須是縮小轉換
+c:\users\weizero\desktop\graph2\loadply\main.cpp(180): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(257): warning C4244: '正在初始化': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(329): warning C4305: '引數': 從 'int' 轉換為 'GLboolean'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(329): warning C4309: '引數': 轉換導致常數值遭截斷; 可能需要使用較大的類型
+c:\users\weizero\desktop\graph2\loadply\main.cpp(356): warning C4244: '正在初始化': 將 'int' 轉換為 'float'，由於類型不同，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(434): warning C4244: '正在初始化': 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(462): warning C4244: '+=': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
+c:\users\weizero\desktop\graph2\loadply\main.cpp(464): warning C4244: '-=': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
   LoadPLY.vcxproj -> C:\Users\weizero\Desktop\Graph2\x64\Debug\LoadPLY.exe

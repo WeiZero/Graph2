@@ -55,12 +55,12 @@ void TexInit() {
 	BGTex = stbiloader::Gentexture("Texture/bg.png");
 	BGTex2 = stbiloader::Gentexture("Texture/brick.png");
 	ParticleTex = stbiloader::Gentexture("Texture/effect.png");
-	blockTex[0] = stbiloader::Gentexture("Texture/01.png");
-	blockTex[1] = stbiloader::Gentexture("Texture/02.png");
-	blockTex[2] = stbiloader::Gentexture("Texture/03.png");
-	blockTex[3] = stbiloader::Gentexture("Texture/04.png");
-	blockTex[4] = stbiloader::Gentexture("Texture/05.png");
-	blockTex[5] = stbiloader::Gentexture("Texture/06.png");
+	blockTex[0] = stbiloader::Gentexture("Texture/1.png");
+	blockTex[1] = stbiloader::Gentexture("Texture/2.png");
+	blockTex[2] = stbiloader::Gentexture("Texture/3.png");
+	blockTex[3] = stbiloader::Gentexture("Texture/4.png");
+	blockTex[4] = stbiloader::Gentexture("Texture/5.png");
+	blockTex[5] = stbiloader::Gentexture("Texture/6.png");
 }
 
 void BgInit() {
@@ -146,15 +146,37 @@ void ParticleInit() {
 
 void ScreenInit() {
 
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// create a color attachment texture
+
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	glGenRenderbuffers(1, &renderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 							 // positions   // texCoords
-		-1,  -1,		0, 0,
-		 1,  -1,		1, 0,
-		 1,  -0.7,		1, 1,
+		-1,  -0.65,		0, 0.13,
+		 1,  -0.65,		1, 0.13,
+		 1,  -1,		1, 0.3,
 
-		-1,	 -1,		0, 0,
-		 1,  -0.7,		1, 1,
-		-1,  -0.7,		0, 1
+		-1,	 -0.65,		0, 0.13,
+		 1,  -1,		1, 0.3,
+		-1,  -1,		0, 0.3
 	};
 	glUseProgram(FBO);
 	// screen quad VAO
@@ -168,10 +190,6 @@ void ScreenInit() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 	// Get the uniform variables location. You've probably already done that before...
-	screenTexture1 = glGetUniformLocation(FBO, "screenTexture1");
-	// Then bind the uniform samplers to texture units:
-	
-	glUniform1i(screenTexture1, 0);
 }
 
 void init() {
@@ -321,14 +339,16 @@ void Drawblock() {
 void DrawBG() {
 
 	glUseProgram(BG);
-	glBindVertexArray(vaoQuad2);
-	glBindTexture(GL_TEXTURE_2D, BGTex2);
-	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
+
 	glBindVertexArray(vaoQuad);
 	glBindTexture(GL_TEXTURE_2D, BGTex);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
-	
+	glBindVertexArray(vaoQuad2);
+	glBindTexture(GL_TEXTURE_2D, BGTex2);
+	glDrawArrays(GL_TRIANGLES, 0, 3 * 2);
+
 }
+
 
 void DrawParticle() {
 
@@ -352,20 +372,17 @@ void DrawParticle() {
 }
 
 void DrawScreen() {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glUseProgram(FBO);
 	glBindVertexArray(quadVAO);
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, textureColorbuffer[0]);	// use the color attachment texture as the texture of the quad plane
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, textureColorbuffer[1]);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void display() {
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glEnable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	updateModels();
@@ -375,8 +392,15 @@ void display() {
 	
 	DrawBG();
 	DrawParticle();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
 	DrawScreen();
-
+	DrawBG();
+	DrawPlayer();
+	Drawblock();
+	
 	glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();//調換前台和後台buffer ,當後臺buffer畫完和前台buffer交換使我們看見它
 }
@@ -414,7 +438,7 @@ void Timer(int x) {
 		blockList.push_back(block);
 		blockNum++;
 		for (int i = 0; i < blockList.size(); i++) {
-			if (blockList[i].pos[0].y <= -330) {
+			if (blockList[i].pos[0].y <= -210) {
 				blockList.erase(blockList.begin() + i);
 				i--;
 			}
@@ -435,9 +459,9 @@ void Timer(int x) {
  			break;
  		case 1:
 			if (moveRight == 1 && moveNow)
-				move_x += player_Speed;
+				move_x += ((move_x + player_Speed)<570 ? player_Speed : 0);
 			else if (moveNow)
-				move_x -= player_Speed;
+				move_x -= ((move_x - player_Speed)>=-5 ? player_Speed : 0);
 			SpriteIndex = (SpriteIndex + 1 >= 6) ? 1 : SpriteIndex + 1;
  				break;
  		}
