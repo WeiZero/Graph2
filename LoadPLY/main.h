@@ -16,7 +16,7 @@ using namespace glm;
 #include "point.h"
 
 #define player_Width 40.0
-#define player_Height 30.0
+#define player_Height 40.0
 #define player_Speed 5.0
 
 #define block_Width 60.0
@@ -36,19 +36,20 @@ GLuint FBO;
 GLuint vaoPlayer, vboPlayer;
 GLuint vaoBlock, vboBlock;
 GLuint vaoQuad, vboQuad;
+GLuint vaoQuad2, vboQuad2;
 GLuint vaoParticle, vboParticle;
 
 // 人物操控
-mat4 Model[2];
+mat4 Model;
 GLuint _Model;
-float move_x[2] = { 0.0 };
-int moveRight[2] = { 1 };
-bool moveNow[2] = { false };
-int state[2] = { 0 };
+float move_x =  0.0;
+int moveRight =  1 ;
+bool moveNow =  false ;
+int state =  0;
 
 // 視角設定
 mat4 Projection;
-mat4 View[2];
+mat4 View;
 vec3 CameraPos;
 GLuint _Camera, _Proj, _View;
 
@@ -57,8 +58,8 @@ Point player[4];
 
 // 圖片設定
 GLuint playerArrayTex;
-int SpriteIndex[2] = { 0 };
-GLuint BGTex;
+int SpriteIndex =  0 ;
+GLuint BGTex, BGTex2;
 GLuint blockTex[6];
 GLuint ParticleTex;
 GLuint framebuffer[2], textureColorbuffer[2];
@@ -73,13 +74,23 @@ struct star_t
 
 float quad[] = {
 	//position		//UV
-	-1, -1,		0, 0,
-	 1, -1,		1, 0,
-	 1,  1.5,		1, 1,
+	-1, -0.7,		0, 0,
+	 1, -0.7,		1, 0,
+	 1,  1.3,		1, 1,
 
-	-1, -1,		0, 0,
-	 1,   1.5,		1, 1,
-	-1,   1.5,		0, 1
+	-1, -0.7,		0, 0,
+	 1,   1.3,		1, 1,
+	-1,   1.3,		0, 1
+};
+float quad2[] = {
+	//position		//UV
+	-1, -0.7,		0, 0,
+	1, -0.7,		1, 0,
+	1,  -0.5,		1, 1,
+
+	-1, -0.7,		0, 0,
+	1,   -0.5,		1, 1,
+	-1,   -0.5,		0, 1
 };
 
 class Block {
