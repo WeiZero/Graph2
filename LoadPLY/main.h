@@ -14,6 +14,7 @@ using namespace glm;
 #include "LoadShaders.h"
 #include "stbiloader.h"
 #include "point.h"
+#include <time.h>
 
 #define player_Width 40.0
 #define player_Height 40.0
@@ -31,6 +32,7 @@ GLuint blockArray;
 GLuint BG;
 GLuint particle;
 GLuint FBO;
+GLuint Mirror;
 
 // Tex Bind
 GLuint vaoPlayer, vboPlayer;
@@ -62,9 +64,10 @@ int SpriteIndex =  0 ;
 GLuint BGTex, BGTex2;
 GLuint blockTex[6];
 GLuint ParticleTex;
-//GLuint framebuffer[2], textureColorbuffer[2];
 GLuint quadVAO, quadVBO;
 GLuint framebuffer, textureColorbuffer, renderbuffer;
+GLuint mquadVAO, mquadVBO;
+GLuint mframebuffer, mtextureColorbuffer, mrenderbuffer;
 
 struct star_t
 {
@@ -106,10 +109,10 @@ public:
 	}
 	Block(int in, int x) {
 		index = in;
-		pos[0] = Point(x - block_Width, 300 - block_Height / 2);
-		pos[1] = Point(x, 300 - block_Height / 2);
-		pos[2] = Point(x, 300 + block_Height / 2);
-		pos[3] = Point(x - block_Width, 300 + block_Height / 2);
+		pos[0] = Point(x , 300 - block_Height / 2);
+		pos[1] = Point(x + block_Width, 300 - block_Height / 2);
+		pos[2] = Point(x + block_Width, 300 + block_Height / 2);
+		pos[3] = Point(x, 300 + block_Height / 2);
 	}
 	int downY(int y) {
 		pos[0].y -= y;
@@ -122,3 +125,17 @@ public:
 
 int blockNum = 0;
 vector<Block> blockList;
+
+enum GameState { PLAY, DEAD };
+GameState gameState = PLAY;
+
+int execAddGenBlockCount = 0;//增加產生方塊頻率計數器
+int genBlock = 0;//產生方塊計數器
+int genBlockCount = 20;//產生方塊頻率
+
+int execAddSpeed = 0;//增加掉落速度計數器
+float dropSpeed = 2.0f;//掉落速度
+
+int clearBlock = 0;//清除方塊計數器
+
+float accelerateCoeff = 1;

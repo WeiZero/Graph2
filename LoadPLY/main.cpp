@@ -144,7 +144,55 @@ void ParticleInit() {
 
 }
 
-void ScreenInit() {
+void MirrorInit() {
+
+	glGenFramebuffers(1, &mframebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mframebuffer);
+	// create a color attachment texture
+
+	glGenTextures(1, &mtextureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, mtextureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mtextureColorbuffer, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	glGenRenderbuffers(1, &mrenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, mrenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mrenderbuffer);
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+							 // positions   // texCoords
+		-1,  -0.65,		0, 0.13,
+		 1,  -0.65,		1, 0.13,
+		 1,  -1,		1, 0.3,
+
+		-1,	 -0.65,		0, 0.13,
+		 1,  -1,		1, 0.3,
+		-1,  -1,		0, 0.3
+	};
+	glUseProgram(Mirror);
+	// screen quad VAO
+	glGenVertexArrays(1, &mquadVAO);
+	glGenBuffers(1, &mquadVBO);
+	glBindVertexArray(mquadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, mquadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	// Get the uniform variables location. You've probably already done that before...
+}
+
+void FBOInit() {
 
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -170,13 +218,13 @@ void ScreenInit() {
 
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 							 // positions   // texCoords
-		-1,  -0.65,		0, 0.13,
-		 1,  -0.65,		1, 0.13,
-		 1,  -1,		1, 0.3,
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
 
-		-1,	 -0.65,		0, 0.13,
-		 1,  -1,		1, 0.3,
-		-1,  -1,		0, 0.3
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
+		1.0f,  1.0f,  1.0f, 1.0f
 	};
 	glUseProgram(FBO);
 	// screen quad VAO
@@ -193,6 +241,7 @@ void ScreenInit() {
 }
 
 void init() {
+	srand(time(NULL));
 	glClearColor(0.0, 0.0, 0.0, 1);//black screen
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -218,14 +267,20 @@ void init() {
 		{ GL_VERTEX_SHADER, "Shader/particle.vs" },//vertex shader
 		{ GL_FRAGMENT_SHADER, "Shader/particle.fs" },//fragment shader
 		{ GL_NONE, NULL } };
-	ShaderInfo FBOShader[] = {
+	ShaderInfo MirrorShader[] = {
 		{ GL_VERTEX_SHADER, "Shader/FBO.vs" },//vertex shader
 		{ GL_FRAGMENT_SHADER, "Shader/FBO.fs" },//fragment shader
 		{ GL_NONE, NULL } };
+	ShaderInfo FBOShader[] = {
+		{ GL_VERTEX_SHADER, "Shader/FBO.vs" },//vertex shader
+		{ GL_FRAGMENT_SHADER, "Shader/GrayScale.fs" },//fragment shader
+		{ GL_NONE, NULL } };
+
 	playerArray = LoadShaders(playerArrayShader);
 	blockArray = LoadShaders(blockArrayShader);
 	BG = LoadShaders(backgroundShader);
 	particle = LoadShaders(particleShader);
+	Mirror = LoadShaders(MirrorShader);
 	FBO = LoadShaders(FBOShader);
 
 	TexInit();	
@@ -233,7 +288,8 @@ void init() {
 	blockInit();
 	BgInit();
 	ParticleInit();
-	ScreenInit();
+	MirrorInit();
+	FBOInit();
 }
 
 #define DOR(angle) (angle*3.1415/180);
@@ -371,16 +427,27 @@ void DrawParticle() {
 	glDrawArrays(GL_POINTS, 0, NUM_STARS);
 }
 
-void DrawScreen() {
+void DrawMirror() {
 
+	glUseProgram(Mirror);
+	glBindVertexArray(mquadVAO);
+	glBindTexture(GL_TEXTURE_2D, mtextureColorbuffer);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void DrawScreen() {
 	glUseProgram(FBO);
+	if (gameState == PLAY)
+		glUniform1f(glGetUniformLocation(FBO, "dead"), 0);
+	else
+		glUniform1f(glGetUniformLocation(FBO, "dead"), 1);
 	glBindVertexArray(quadVAO);
 	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void display() {
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mframebuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -391,18 +458,21 @@ void display() {
 	Drawblock();
 	
 	DrawBG();
-	DrawParticle();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+	if(gameState==PLAY)
+		DrawParticle();
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // back to default
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);
-	DrawScreen();
+	DrawMirror();
 	DrawBG();
 	Drawblock();
 	DrawPlayer();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	DrawScreen();
 	
-	
-	glFlush();//強制執行上次的OpenGL commands
+	if(gameState==PLAY)
+		glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();//調換前台和後台buffer ,當後臺buffer畫完和前台buffer交換使我們看見它
 }
 
@@ -412,62 +482,171 @@ void PressKey(unsigned char key, int x, int y) {
 	switch (key)
 	{
 	case 'd':
-		moveRight = 1;
-		moveNow = true;
-		state = 1;
+		if (gameState == PLAY){
+			moveRight = 1;
+			moveNow = true;
+			state = 1;
+		}
 		break;
 	case 'a':
-		moveRight = 0;
-		moveNow = true;
-		state = 1;
+		if (gameState == PLAY) {
+			moveRight = 0;
+			moveNow = true;
+			state = 1;
+		}
 		break;
 	case 's':
+		if (gameState == PLAY) {
 		moveNow = false;
 		state = 0;
+		}
+		break;
+	case 'r':
+		if (gameState == DEAD)
+		{
+			gameState = PLAY;
+			blockList.clear();
+			move_x = 0;
+			moveNow = false;
+			state = 0;
+			genBlockCount = 20;
+			dropSpeed = 2.0f;
+		}
+		break;
+	case 'f':
+		if (gameState == DEAD)
+		{
+			gameState = PLAY;
+			blockList.clear();
+			move_x = 0;
+			moveNow = false;
+			state = 0;
+		}
+		break;
+	case VK_SPACE:
+		accelerateCoeff = 1.6;
 		break;
 	}
 }
-
-int Xpos = 0;
-void Timer(int x) {
-
-	if (x > 5) {
-		int s = (Xpos + 1) * block_Width - 300;
-		if (blockNum >= 6)
-			blockNum = 0;
-		Block block(blockNum, s);
-		blockList.push_back(block);
-		blockNum++;
-		for (int i = 0; i < blockList.size(); i++) {
-			if (blockList[i].pos[0].y <= -210) {
-				blockList.erase(blockList.begin() + i);
-				i--;
-			}
-		}
-		x = 0;
-
-		Xpos++;
-		if (Xpos > 9)
-			Xpos = 0;
+void KeyUp(unsigned char key, int x, int y) {
+	switch (key)
+	{
+	case VK_SPACE:
+		accelerateCoeff = 1;
+		break;
 	}
-	for (int i = 0; i < blockList.size(); i++) 
-		blockList[i].downY(5);
+}
+bool isCollide()
+{
+	int overlap = false;
+	int number = -1;
+	int bias = 5;
+	float player_x = move_x - 300.0f;
+	float player_y = player[0].y;
+	for (int i = 0; i < blockList.size(); i++)
+	{
+		if (player_x + player_Width - bias > blockList[i].pos[0].x &&
+			player_x + player_Width - bias< blockList[i].pos[0].x + block_Width &&
+			player[0].y + player_Height > blockList[i].pos[0].y &&
+			player[0].y + player_Height < blockList[i].pos[0].y + block_Height)
+			overlap = 1;
+		if (player_x + bias > blockList[i].pos[0].x &&
+			player_x + bias < blockList[i].pos[0].x + block_Width &&
+			player[0].y + player_Height > blockList[i].pos[0].y &&
+			player[0].y + player_Height < blockList[i].pos[0].y + block_Height)
+			overlap = 2;
+		if (player_x + player_Width - bias> blockList[i].pos[0].x &&
+			player_x + player_Width - bias< blockList[i].pos[0].x + block_Width &&
+			player[0].y > blockList[i].pos[0].y &&
+			player[0].y  < blockList[i].pos[0].y + block_Height)
+			overlap = 3;
+		if (player_x + bias > blockList[i].pos[0].x &&
+			player_x + bias < blockList[i].pos[0].x + block_Width &&
+			player[0].y  > blockList[i].pos[0].y &&
+			player[0].y  < blockList[i].pos[0].y + block_Height)
+			overlap = 4;
+		if (overlap > 0)
+		{
+			/*cout << i << endl;
+			cout << overlap << endl;
+			cout << player_x <<" "<<player[0].y<<endl;
+			cout << blockList[i].pos[0].x << " " << blockList[i].pos[0].y << endl;*/
+			return true;
+		}
+	}
+		return false;
+}
 
- 	switch (state)
- 	{
- 		case 0:
+void Timer(int x) {
+	if (gameState == PLAY)
+	{
+		execAddGenBlockCount++;
+		if (execAddGenBlockCount > 250)//5秒
+		{
+			if(genBlockCount > 1)
+				genBlockCount--;
+			execAddGenBlockCount = 0;
+		}
+
+		genBlock++;
+		if (genBlock > genBlockCount) {
+			int s = rand() % 10 * block_Width - 300;
+			if (blockNum >= 6)
+				blockNum = 0;
+			Block block(blockNum, s);
+			blockList.push_back(block);
+			blockNum++;
+			genBlock=0;
+		}
+
+		execAddSpeed++;
+		if (execAddSpeed > 10)
+		{
+			dropSpeed += 0.02f;
+			execAddSpeed = 0;
+		}
+		for (int i = 0; i < blockList.size(); i++)
+			blockList[i].downY(dropSpeed);
+
+		clearBlock++;
+		if (clearBlock > 5)
+		{
+			for (int i = 0; i < blockList.size(); i++) {
+				if (blockList[i].pos[0].y <= -210) {
+					blockList.erase(blockList.begin() + i);
+					i--;
+				}
+			}
+			clearBlock = 0;
+		}
+
+		switch (state)
+		{
+		case 0:
 			SpriteIndex = 0;
- 			break;
- 		case 1:
+			break;
+		case 1:
 			if (moveRight == 1 && moveNow)
-				move_x += ((move_x + player_Speed)<570 ? player_Speed : 0);
+				move_x += ((move_x + player_Speed*accelerateCoeff)
+					< 570 ? player_Speed*accelerateCoeff : 0);
 			else if (moveNow)
-				move_x -= ((move_x - player_Speed)>=-5 ? player_Speed : 0);
+				move_x -= ((move_x - player_Speed*accelerateCoeff)
+					>= -5 ? player_Speed*accelerateCoeff : 0);
 			SpriteIndex = (SpriteIndex + 1 >= 6) ? 1 : SpriteIndex + 1;
- 				break;
- 		}
+			break;
+		}
 
-	glutTimerFunc(30, Timer, x+1);
+		if (isCollide())
+		{
+			gameState = DEAD;
+			cout << "You Died!" << endl;
+			cout << "With " << 1000 / (20 * genBlockCount)
+				 << " BlockCount per Second," << endl;
+			cout << "And " << dropSpeed << " DropSpeed!" << endl;
+			cout << "Press R to Restart or F to Continue." << endl << endl;
+		}
+	}
+	glutTimerFunc(20, Timer,x);
 	glutPostRedisplay();
 }
 
@@ -485,9 +664,10 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
-
+	cout << "Press Space to Acclerate!" << endl << endl;
 	glutDisplayFunc(display);
 	glutKeyboardFunc(PressKey);
+	glutKeyboardUpFunc(KeyUp);
 	glutTimerFunc(30, Timer, 0);
 
 	init();
